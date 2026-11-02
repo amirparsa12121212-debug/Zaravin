@@ -49,6 +49,9 @@
   --ink:#1B2B27;
   --muted:#57685F;
   --line:rgba(20,89,77,.16);
+  --wood-1:#8A6244;
+  --wood-2:#6B4A32;
+  --wood-3:#523824;
   --radius:20px;
   --radius-lg:28px;
   --pill:999px;
@@ -100,7 +103,7 @@ section{scroll-margin-top:calc(var(--header-h) + 16px)}
 .btn-wa{background:var(--orange);color:var(--teal-ink);padding:11px 20px;font-size:14.5px}
 .btn-wa:hover{background:var(--orange-deep);transform:translateY(-2px)}
 
-/* ====== پرده ورودی: پنجره ====== */
+/* ====== پرده ورودی: پنجره چوبی با شیشه واقعی ====== */
 .curtain{
   position:fixed;inset:0;z-index:9999;
   background:radial-gradient(120% 90% at 50% 30%, #11453B 0%, var(--teal-deep) 55%, #08251F 100%);
@@ -115,49 +118,98 @@ section{scroll-margin-top:calc(var(--header-h) + 16px)}
   font-size:.85rem;letter-spacing:.45em;color:rgba(251,250,247,.55);margin-top:var(--sp-1);
 }
 .arch-window{
-  display:block;margin:var(--sp-7) auto var(--sp-5);
-  width:min(300px,72vw);height:min(440px,106vw);
-  perspective:1600px;position:relative;
+  display:block;position:relative;
+  margin:var(--sp-7) auto calc(var(--sp-5) + 14px);
+  width:min(320px,76vw);height:min(470px,112vw);
+  perspective:1500px;
 }
+/* پخش نور روی دیوار هنگام باز شدن */
+.arch-window::after{
+  content:"";position:absolute;inset:-32% -24%;z-index:-1;
+  background:radial-gradient(50% 52% at 50% 55%, rgba(255,240,200,.30), transparent 70%);
+  opacity:0;transition:opacity 1.1s ease .2s;pointer-events:none;
+}
+.arch-window.open::after{opacity:1}
+/* قاب چوبی */
 .arch-frame{
   position:absolute;inset:0;display:block;
-  border:12px solid #EFE8D9;
-  border-radius:999px 999px 26px 26px;
-  overflow:hidden;background:var(--teal-deep);
-  box-shadow:0 30px 60px -20px rgba(0,0,0,.45);
+  border-radius:999px 999px 22px 22px;
+  background:linear-gradient(145deg,var(--wood-1) 0%,var(--wood-2) 48%,var(--wood-3) 100%);
+  padding:13px;
+  box-shadow:
+    0 34px 70px -22px rgba(0,0,0,.55),
+    inset 0 2px 3px rgba(255,255,255,.35),
+    inset 0 -3px 5px rgba(0,0,0,.4);
   transition:box-shadow .5s var(--ease);
 }
-.arch-window:hover .arch-frame{box-shadow:0 34px 70px -18px rgba(0,0,0,.55)}
-.beyond{
-  position:absolute;inset:0;
-  background:radial-gradient(80% 70% at 50% 60%, #FFF6E0 0%, #F4E3BF 45%, #E9D3A4 100%);
-  opacity:0;transition:opacity 1s ease .15s;
+.arch-window:hover .arch-frame{box-shadow:0 38px 80px -20px rgba(0,0,0,.6), inset 0 2px 3px rgba(255,255,255,.35), inset 0 -3px 5px rgba(0,0,0,.4)}
+/* رگه‌های چوب */
+.arch-frame::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;z-index:0;
+  background:repeating-linear-gradient(115deg,
+    rgba(255,255,255,.055) 0 2px, transparent 2px 6px,
+    rgba(0,0,0,.06) 6px 7px, transparent 7px 12px);
+  opacity:.55;pointer-events:none;
 }
-.arch-window.open .beyond{opacity:1}
+.arch-inner{
+  position:absolute;inset:13px;z-index:1;display:block;
+  border-radius:999px 999px 12px 12px;overflow:hidden;
+  background:#0E2F29;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.35), inset 0 4px 14px rgba(0,0,0,.3);
+}
+/* منظره پشت پنجره: آسمان، خورشید، دریا و نخل */
+.arch-scene{
+  position:absolute;inset:0;width:100%;height:100%;display:block;
+  transform:scale(1.02);
+  filter:saturate(.94) brightness(.97);
+  transition:transform 1.5s var(--ease), filter 1.2s ease;
+}
+.arch-window.open .arch-scene{transform:scale(1.13);filter:saturate(1.06) brightness(1.05)}
+.scene-glow{
+  position:absolute;inset:-12%;
+  background:radial-gradient(60% 45% at 50% 40%, rgba(255,244,214,.8), rgba(255,244,214,0) 70%);
+  opacity:.3;transition:opacity 1.2s ease;pointer-events:none;
+}
+.arch-window.open .scene-glow{opacity:.9}
+/* لنگه‌های شیشه‌ای */
 .panel{
-  position:absolute;top:0;bottom:0;width:50%;
-  background:linear-gradient(160deg,#EAF2EF 0%,#CFE2DB 55%,#B9D3CB 100%);
-  transition:transform 1.1s cubic-bezier(.7,0,.25,1), opacity .9s ease .5s;
-  backface-visibility:hidden;
+  position:absolute;top:0;bottom:0;width:50%;z-index:3;
+  background:linear-gradient(160deg,
+    rgba(255,255,255,.55) 0%,
+    rgba(214,236,229,.4) 38%,
+    rgba(255,255,255,.16) 60%,
+    rgba(186,218,209,.42) 100%);
+  transition:transform 1.3s cubic-bezier(.65,0,.25,1), opacity .85s ease .55s;
 }
 .panel::after{
   content:"";position:absolute;inset:0;
-  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.38) 46%,transparent 60%);
+  background:linear-gradient(115deg,transparent 24%,rgba(255,255,255,.5) 44%,rgba(255,255,255,.08) 52%,transparent 62%);
 }
-.panel-l{left:0;border-right:10px solid #EFE8D9;transform-origin:left center}
-.panel-r{right:0;border-left:10px solid #EFE8D9;transform-origin:right center}
-.panel-r .handle{
-  position:absolute;left:8px;top:calc(50% + 34px);
-  width:9px;height:36px;border-radius:var(--pill);
-  background:var(--orange);box-shadow:0 2px 6px rgba(0,0,0,.25);
+.panel-l{left:0;border-right:5px solid var(--wood-2);transform-origin:left center}
+.panel-r{right:0;border-left:5px solid var(--wood-2);transform-origin:right center}
+.arch-window.open .panel-l{transform:rotateY(-112deg);opacity:0}
+.arch-window.open .panel-r{transform:rotateY(112deg);opacity:0}
+/* دستگیره برنزی */
+.handle{
+  position:absolute;top:calc(50% - 10px);
+  width:10px;height:54px;border-radius:var(--pill);
+  background:linear-gradient(180deg,#FFB35C,var(--orange) 45%,#C86A10);
+  box-shadow:0 3px 6px rgba(0,0,0,.35), inset 0 1px 2px rgba(255,255,255,.55);
 }
-.arch-window.open .panel-l{transform:rotateY(-108deg)}
-.arch-window.open .panel-r{transform:rotateY(108deg)}
+.panel-l .handle{right:10px}
+.panel-r .handle{left:10px}
+/* طاقچه زیر پنجره */
+.arch-sill{
+  position:absolute;left:-9%;right:-9%;bottom:-16px;height:18px;
+  border-radius:8px;z-index:2;
+  background:linear-gradient(180deg,#9A7250,var(--wood-2) 55%,var(--wood-3));
+  box-shadow:0 14px 26px -10px rgba(0,0,0,.5), inset 0 1px 2px rgba(255,255,255,.35);
+}
 .click-label{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:clamp(1.5rem,5vw,2rem);font-weight:900;color:var(--teal-ink);
-  z-index:3;pointer-events:none;
-  transition:opacity .4s ease;
+  position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(1.5rem,5vw,2rem);font-weight:900;color:var(--teal-deep);
+  text-shadow:0 1px 0 rgba(255,255,255,.7), 0 0 20px rgba(255,255,255,.55);
+  pointer-events:none;transition:opacity .4s ease;
   animation:labelPulse 2.4s ease-in-out infinite;
 }
 .arch-window.open .click-label{opacity:0}
@@ -209,10 +261,6 @@ section{scroll-margin-top:calc(var(--header-h) + 16px)}
   display:flex;align-items:center;
   padding:calc(var(--header-h) + var(--sp-9)) 0 var(--sp-9);
   overflow:hidden;
-}
-.hero-mark{
-  position:absolute;top:8%;left:50%;transform:translateX(-50%);
-  height:min(78vh,640px);width:auto;color:var(--teal);opacity:.07;pointer-events:none;
 }
 .hero-latin{
   position:absolute;bottom:4%;left:0;right:0;text-align:center;pointer-events:none;
@@ -488,17 +536,84 @@ section{scroll-margin-top:calc(var(--header-h) + 16px)}
 </head>
 <body class="no-scroll">
 
-<!-- ====== پرده ورودی: پنجره کلیک‌کن ====== -->
+<!-- ====== پرده ورودی: پنجره چوبی کلیک‌کن ====== -->
 <div id="curtain" class="curtain" role="dialog" aria-modal="true" aria-label="برای ورود به سایت زاراوین، روی پنجره کلیک کنید">
   <div class="curtain-inner">
     <p class="curtain-brand">زاراوین<span>ZARAWIN</span></p>
     <button id="windowBtn" class="arch-window" aria-label="کلیک کن — ورود به سایت">
       <span class="arch-frame">
-        <span class="beyond"></span>
-        <span class="panel panel-l"><span class="handle"></span></span>
-        <span class="panel panel-r"><span class="handle"></span></span>
-        <span class="click-label">کلیک کن</span>
+        <span class="arch-inner">
+          <!-- منظره بیرون پنجره: خورشید، دریا و نخل‌های بندر -->
+          <svg class="arch-scene" viewBox="0 0 300 440" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="zwSky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#A7D8E8"/>
+                <stop offset=".42" stop-color="#CBE8DF"/>
+                <stop offset=".58" stop-color="#FFE7BD"/>
+                <stop offset="1" stop-color="#F6D49C"/>
+              </linearGradient>
+              <radialGradient id="zwSun" cx=".5" cy=".5" r=".5">
+                <stop offset="0" stop-color="#FFF8DE" stop-opacity=".95"/>
+                <stop offset=".45" stop-color="#FFEDB0" stop-opacity=".5"/>
+                <stop offset="1" stop-color="#FFEDB0" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="zwSea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#8FC6CE"/>
+                <stop offset="1" stop-color="#5D9FA9"/>
+              </linearGradient>
+              <linearGradient id="zwVig" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#0D3A32" stop-opacity="0"/>
+                <stop offset="1" stop-color="#0D3A32" stop-opacity=".38"/>
+              </linearGradient>
+            </defs>
+            <rect width="300" height="440" fill="url(#zwSky)"/>
+            <circle cx="150" cy="208" r="128" fill="url(#zwSun)"/>
+            <circle cx="150" cy="208" r="27" fill="#FFF4CD"/>
+            <rect y="252" width="300" height="188" fill="url(#zwSea)"/>
+            <rect y="251" width="300" height="3" fill="#FFF0C8" opacity=".85"/>
+            <g fill="#FFE9AE">
+              <ellipse cx="150" cy="263" rx="26" ry="3.4" opacity=".55"/>
+              <ellipse cx="150" cy="277" rx="18" ry="2.8" opacity=".4"/>
+              <ellipse cx="150" cy="293" rx="12" ry="2.2" opacity=".28"/>
+            </g>
+            <g fill="#11453B" opacity=".55">
+              <path d="M206 250 c4 5 12 5 16 0 z"/>
+              <path d="M213 250 v-12 l9 12 z"/>
+            </g>
+            <g fill="none" stroke="#2C5A50" stroke-width="2.4" stroke-linecap="round" opacity=".55">
+              <path d="M96 148 q6 -7 12 0 q6 -7 12 0"/>
+              <path d="M186 122 q5 -6 10 0 q5 -6 10 0"/>
+            </g>
+            <g stroke="#12463D" fill="none" stroke-linecap="round" opacity=".85">
+              <path d="M52 440 C 46 392 42 348 50 306" stroke-width="9"/>
+              <g stroke-width="5.5">
+                <path d="M50 306 C 30 296 14 300 4 314"/>
+                <path d="M50 306 C 34 288 20 284 8 288"/>
+                <path d="M50 306 C 44 284 34 272 22 268"/>
+                <path d="M50 306 C 56 284 66 274 80 272"/>
+                <path d="M50 306 C 66 294 82 294 94 302"/>
+                <path d="M50 306 C 64 312 76 322 84 334"/>
+              </g>
+            </g>
+            <g stroke="#12463D" fill="none" stroke-linecap="round" opacity=".8">
+              <path d="M252 440 C 256 404 260 372 254 340" stroke-width="8"/>
+              <g stroke-width="5">
+                <path d="M254 340 C 238 330 224 332 214 344"/>
+                <path d="M254 340 C 240 324 228 320 218 324"/>
+                <path d="M254 340 C 258 320 268 310 282 308"/>
+                <path d="M254 340 C 268 332 282 334 292 342"/>
+                <path d="M254 340 C 262 352 270 362 276 374"/>
+              </g>
+            </g>
+            <rect y="330" width="300" height="110" fill="url(#zwVig)"/>
+          </svg>
+          <span class="scene-glow" aria-hidden="true"></span>
+          <span class="panel panel-l"><span class="handle"></span></span>
+          <span class="panel panel-r"><span class="handle"></span></span>
+          <span class="click-label">کلیک کن</span>
+        </span>
       </span>
+      <span class="arch-sill" aria-hidden="true"></span>
     </button>
     <p class="curtain-hint">برای ورود، روی پنجره کلیک کنید</p>
   </div>
@@ -536,16 +651,11 @@ section{scroll-margin-top:calc(var(--header-h) + 16px)}
 <main>
 <!-- ====== هیرو ====== -->
 <section class="hero" id="home">
-  <svg class="hero-mark" viewBox="0 0 200 260" aria-hidden="true" focusable="false">
-    <path d="M30 250 V112 a70 74 0 0 1 140 0 V250" fill="none" stroke="currentColor" stroke-width="4"/>
-    <path d="M79 90 h46 L74 158 h50" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="square"/>
-    <circle cx="141" cy="172" r="5.5" fill="currentColor"/>
-  </svg>
   <div class="hero-latin" aria-hidden="true">ZARAWIN</div>
   <div class="container">
     <div class="hero-content">
       <span class="hero-chip reveal"><em>ZARAWIN · DOORS AND WINDOWS</em> بندرعباس</span>
-      <h1 class="reveal" style="--d:.1s">زاراوین؛ <span class="accent">قابِ</span> درب و پنجره‌ی مدرن</h1>
+      <h1 class="reveal" style="--d:.1s">زاراوین؛ درب و پنجره‌ی <span class="accent">مدرن</span></h1>
       <p class="hero-lead reveal" style="--d:.2s">
         طراحی، ساخت و اجرای درب و پنجره آلومینیوم ترمال‌برک، UPVC، نمای شیشه‌ای و درب ضد سرقت —
         با متریال درجه‌یک و نصب دقیق، در بندرعباس و سراسر هرمزگان.
@@ -824,7 +934,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function enterSite(){
     if (curtain.classList.contains('done')) return;
     windowBtn.classList.add('open');
-    var wait = reduce ? 300 : 1100;
+    var wait = reduce ? 400 : 1250;
     setTimeout(function(){
       curtain.classList.add('done');
       document.body.classList.remove('no-scroll');
@@ -1035,4 +1145,4 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 </body>
-  </html>
+</html>
